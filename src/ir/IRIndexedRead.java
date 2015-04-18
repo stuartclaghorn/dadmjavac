@@ -1,5 +1,7 @@
 package ir;
 
+import mips.*;
+
 public class IRIndexedRead extends IRCommand {
   private String result, arg, index;
 
@@ -13,7 +15,7 @@ public class IRIndexedRead extends IRCommand {
     return result + " := " + arg + "[" + index + "]";
   }
 
-  public void encode(MipsGenerator g) {
+  public void encode(MIPSGenerator g) {
     g.addCommand(this.getClass().getSimpleName() + " Mips");
   }
 }

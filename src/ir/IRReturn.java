@@ -1,5 +1,7 @@
 package ir;
 
+import mips.*;
+
 public class IRReturn extends IRCommand {
   final static int BYTE_SIZE = 4;
   final static int GP_REGISTERS = 20;
@@ -16,7 +18,7 @@ public class IRReturn extends IRCommand {
     return "return " + arg;
   }
 
-  public void addEpilogue(MipsGenerator g) {
+  public void addEpilogue(MIPSGenerator g) {
       int step = 0;
       g.addCommand("; FUNCTION Epilogue:");
       g.addCommand("; Restore general-purpose registers from RAM:");
@@ -33,7 +35,7 @@ public class IRReturn extends IRCommand {
       g.addCommand("addi $sp, $sp, 80 ; free the memory we used for spills");
   }
 
-  public void encode(MipsGenerator g) {
+  public void encode(MIPSGenerator g) {
     // int argIdx = getTIdx();
     g.addCommand("add $v0, $zero, $a0");
     // addEpilogue(g);

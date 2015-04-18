@@ -1,5 +1,7 @@
 package ir;
 
+import mips.*;
+
 public class IRNewObject extends IRCommand {
   private String result, type;
 
@@ -11,7 +13,7 @@ public class IRNewObject extends IRCommand {
     return result + " := new " + type;
   }
 
-  public void encode(MipsGenerator g) {
+  public void encode(MIPSGenerator g) {
     // g.addCommand(this.getClass().getSimpleName()+" Mips");
   }
 }

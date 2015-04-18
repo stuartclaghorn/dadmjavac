@@ -1,3 +1,5 @@
 package ir;
 
-public abstract class IRCommand implements MipsMaker {}
+import mips.*;
+
+public abstract class IRCommand implements MIPSEncoding {}

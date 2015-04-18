@@ -1,5 +1,7 @@
 package ir;
 
+import mips.*;
+
 public class IRAssign extends IRCommand {
   private String result, op, arg1, arg2;
 
@@ -45,7 +47,7 @@ public class IRAssign extends IRCommand {
     return string;
   }
 
-  public void encode(MipsGenerator g) {
+  public void encode(MIPSGenerator g) {
     g.addT(result);
     int tvarIdx = g.getTIdx(result);
     int arg1Idx = g.getTIdx(arg1);

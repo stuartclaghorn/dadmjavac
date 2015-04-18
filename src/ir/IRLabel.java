@@ -1,5 +1,7 @@
 package ir;
 
+import mips.*;
+
 public class IRLabel extends IRCommand {
   final static int BYTE_SIZE = 4;
   final static int GP_REGISTERS = 20;
@@ -20,7 +22,7 @@ public class IRLabel extends IRCommand {
     return name + ":";
   }
 
-  public void addPrologue(MipsGenerator g) {
+  public void addPrologue(MIPSGenerator g) {
       int step = 0;
       g.addCommand("; FUNCTION PROLOGUE:");
       g.addCommand("; Spill all general-purpose registers into RAM:");
@@ -38,7 +40,7 @@ public class IRLabel extends IRCommand {
       g.addCommand("; FUNCTION BODY:");
   }
 
-  public void encode(MipsGenerator g) {
+  public void encode(MIPSGenerator g) {
     g.addCommand(name+":");
     if (name.matches(".*_Start")) {
         // addPrologue(g);

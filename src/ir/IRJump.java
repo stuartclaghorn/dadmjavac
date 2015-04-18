@@ -1,5 +1,7 @@
 package ir;
 
+import mips.*;
+
 public class IRJump extends IRCommand {
   private String label;
 
@@ -11,7 +13,7 @@ public class IRJump extends IRCommand {
     return "goto " + label;
   }
 
-  public void encode(MipsGenerator g) {
+  public void encode(MIPSGenerator g) {
     g.addCommand("j "+label);
   }
 }

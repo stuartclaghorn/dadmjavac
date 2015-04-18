@@ -4,6 +4,7 @@ import java.util.*;
 import syntaxtree.*;
 import visitor.*;
 import ir.*;
+import mips.*;
 
 public class JavaCompiler {
   private String filepath;
@@ -68,24 +69,25 @@ public class JavaCompiler {
         if (errors.size() == 0) {
           IRGenerationVisitor irGenerationVisitor = new IRGenerationVisitor(table);
           List<IRCommand> intermediateRepresentation = irGenerationVisitor.generateIR(program);
+          MIPSGenerator mipsGenerator = new MIPSGenerator();
 
-		  System.out.println("IRs:");
+          System.out.println("IR:");
           for (IRCommand command : intermediateRepresentation) {
             System.out.println(command.toString());
-			irs_out += command.toString();
+            irs_out += command.toString();
           }
-	
-		  System.out.println("Mips:");
-		  MipsGenerator mipsGenerator = new MipsGenerator();
-		  mipsGenerator.generate(intermediateRepresentation);
-		  System.out.print(mipsGenerator.toString());
+          System.out.println();
+
+          System.out.println("MIPS:");
+          mipsGenerator.generate(intermediateRepresentation);
+          System.out.print(mipsGenerator.toString());
           String outfile = filepath.substring(filepath.lastIndexOf("/")+1);
-		  outfile=outfile.substring(0,outfile.lastIndexOf("."))+".asm";
-	      System.out.println("Writing "+outfile);
-		  if (mipsGenerator.toMipsFile(outfile)) {
-		    System.out.println("Wrote "+outfile);
-		  } else {
-            System.err.println("ERROR: writing "+outfile);
+          outfile=outfile.substring(0,outfile.lastIndexOf("."))+".asm";
+          System.out.println("Writing "+outfile);
+          if (mipsGenerator.toMipsFile(outfile)) {
+            System.out.println("Wrote "+outfile);
+          } else {
+                System.err.println("ERROR: writing "+outfile);
           }
 
         }

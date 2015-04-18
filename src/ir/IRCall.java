@@ -1,5 +1,7 @@
 package ir;
 
+import mips.*;
+
 public class IRCall extends IRCommand {
   private String result, label;
   private int parametersCount;
@@ -18,13 +20,15 @@ public class IRCall extends IRCommand {
     return result + " := call "  + label + ", " + parametersCount;
   }
 
-  public void encode(MipsGenerator g) {
+  public void encode(MIPSGenerator g) {
     g.addCommand("jal " + label);
+
     if (!label.matches("_.*")) {
-		g.addT(result);
-		int ResultIdx = g.getTIdx(result);
-		g.addCommand("add $t"+ResultIdx+", $zero, $v0");
+      g.addT(result);
+      int ResultIdx = g.getTIdx(result);
+      g.addCommand("add $t"+ResultIdx+", $zero, $v0");
     }
+
     g.resetAIdx();
   }
 }

@@ -1,5 +1,7 @@
 package ir;
 
+import mips.*;
+
 public class IRCopy extends IRCommand {
   private String result, source;
 
@@ -20,7 +22,7 @@ public class IRCopy extends IRCommand {
     return result + " := " + source;
   }
 
-  public void encode(MipsGenerator g) {
+  public void encode(MIPSGenerator g) {
     // int tvarIdx = Integer.parseInt(result.substring(1))-1;
     g.addT(result);
     int tvarIdx = g.getTIdx(result);

@@ -1,18 +1,18 @@
-package ir;
+package mips;
 
 import java.util.*;
 import java.io.*;
 import java.nio.*;
 import ir.*;
 
-public class MipsGenerator {
+public class MIPSGenerator {
   private List<String> instructions;
-  private int a_idx = 0;
-  private int t_idx = 0;
-  private int v_idx = 0;
-  private Vector a_s = new Vector();
-  private Vector t_s = new Vector();
-  private Vector v_s = new Vector();
+  private static int a_idx = 0;
+  private static int t_idx = 0;
+  private static int v_idx = 0;
+  private Vector<String> a_s = new Vector<String>();
+  private Vector<String> t_s = new Vector<String>();
+  private Vector<String> v_s = new Vector<String>();
         
   public List<String> generate(List<IRCommand> irCommands) {
       instructions = new ArrayList<String>();
@@ -26,6 +26,34 @@ public class MipsGenerator {
 
   public void addCommand(String s) {
       instructions.add(s);
+  }
+
+  public void incrementAIdx() {
+	a_idx = a_idx + 1;
+  }
+
+  public void resetAIdx() {
+	a_idx = 0;
+  }
+
+  public void incrementTIdx() {
+	a_idx = a_idx + 1;
+  }
+
+  public static int getAIdx() {
+    return a_idx;
+  }
+
+  public static int getTIdx() {
+    return t_idx;
+  }
+
+  public int getTIdx(String t) {
+    return t_s.indexOf(t);
+  }
+
+  public void addT(String t) {
+    t_s.add(t);
   }
 
   public String toString() {

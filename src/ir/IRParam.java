@@ -1,5 +1,7 @@
 package ir;
 
+import mips.*;
+
 public class IRParam extends IRCommand {
   private String source;
 
@@ -15,12 +17,11 @@ public class IRParam extends IRCommand {
     return "param " + source;
   }
 
-  public void encode(MipsGenerator g) {
-    // int paramIdx = Integer.parseInt(source.substring(1))-1;
+  public void encode(MIPSGenerator g) {
     int paramIdx = g.getTIdx(source);
     if (paramIdx != -1) {
-		g.addCommand("add $a"+g.getAIdx()+", $zero, $t"+paramIdx);
-		g.incrementAIdx();
-	}
+        g.addCommand("add $a"+g.getAIdx()+", $zero, $t"+paramIdx);
+        g.incrementAIdx();
+    }
   }
 }

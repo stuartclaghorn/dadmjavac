@@ -1,5 +1,7 @@
 package ir;
 
+import mips.*;
+
 public class IRConditionalJump extends IRCommand {
   private String arg, label;
 
@@ -12,7 +14,7 @@ public class IRConditionalJump extends IRCommand {
     return "iffalse " + arg + " goto " + label;
   }
 
-  public void encode(MipsGenerator g) {
+  public void encode(MIPSGenerator g) {
     int argIdx = g.getTIdx(arg);
     g.addCommand("beq $t"+argIdx+", $zero, "+label);
   }
