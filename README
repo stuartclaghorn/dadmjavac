@@ -1,0 +1,37 @@
+CS 1622: Compiler Design
+Spring 2015
+Project 3B
+George Claghorn
+
+
+System Requirements
+-------------------
+
+* JFlex
+
+
+Instructions
+------------
+
+To compile the lexer, parser, and compiler, run:
+
+    make
+
+You may invoke the compiler directly:
+
+    cd build
+    java JavaCompiler ../example/Factorial.java
+
+...or you may invoke it via a convenient script:
+
+    ./bin/mjavac example/Factorial.java
+
+There are sample MiniJava source files in the example/ directory. These examples
+are provided by the MiniJava Project[1]. There are also some sample files in the
+same directory designed to cause parse and name errors.
+
+Unfortunately, I was only able to implement parse error handling and name
+analysis. Type checking and IR generation have not been implemented.
+
+
+[1]: "The MiniJava Project." http://www.cambridge.org/us/features/052182060X/.

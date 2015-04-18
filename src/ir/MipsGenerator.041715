@@ -1,0 +1,75 @@
+package ir;
+
+import java.util.*;
+import java.io.*;
+import java.nio.*;
+import ir.*;
+
+public class MipsGenerator {
+  private List<String> instructions;
+  private int a_idx = 0;
+  private int t_idx = 0;
+  private int v_idx = 0;
+  private Vector a_s = new Vector();
+  private Vector t_s = new Vector();
+  private Vector v_s = new Vector();
+        
+  public List<String> generate(List<IRCommand> irCommands) {
+      instructions = new ArrayList<String>();
+                  
+      for (int i = 0; i < irCommands.size(); i++) {
+		  irCommands.get(i).encode(this);
+      }
+                        
+      return instructions;
+  }
+
+  public void addCommand(String s) {
+      instructions.add(s);
+  }
+
+  public String toString() {
+      String mips_out = new String("");
+      for (String mips : instructions) {
+        mips_out += mips + "\n";
+      }
+      return mips_out;
+  }
+
+  public boolean toMipsFile(String filename) {
+    FileOutputStream fouts = null;
+    OutputStreamWriter out = null;
+    try {
+        fouts = new FileOutputStream(filename);
+        out = new OutputStreamWriter(fouts,"UTF-8");
+    } catch (Exception ex) {
+        System.out.println("Error: opening file - "+filename);
+        return false;
+    }
+
+    String mips_out = toString();
+    try {
+        out.write(mips_out);
+    } catch (IOException ioe) {
+        System.out.println("Error: Writing Mips file");
+        return false;
+    } finally {
+        try {
+            out.close();
+        } catch (Exception ex) {
+            System.out.println("Error: Writing Mips file");
+        }
+    }
+    return true;
+  }
+          
+   /* public void visit(IRAssign command) {
+      instructions.add(...);
+   }
+            
+      public void visit(IRCall command) {
+        instructions.add(...);
+      } */
+              
+    // ...
+}

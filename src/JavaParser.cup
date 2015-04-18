@@ -1,0 +1,188 @@
+import java_cup.runtime.Symbol;
+import syntaxtree.*;
+import java.util.*;
+
+/* Preliminaries to use the scanner.  */
+scan with {: return lexer.next_token(); :};
+
+parser code {:
+  JavaLexer lexer;
+  ArrayList<String> errors = new ArrayList<String>();
+
+  public JavaParser(JavaLexer lexer) {
+    super(lexer);
+    this.lexer = lexer;
+  }
+
+  public void report_error() {
+    errors.add(String.format("Parse error at line %d, column %d", getLine(), getColumn()));
+  }
+
+  // Shush extra error output.
+  public void syntax_error(Symbol cur_token) {}
+
+  public ArrayList<String> getErrors() {
+    return errors;
+  }
+
+  public int getLine() {
+    return lexer.getLine();
+  }
+
+  public int getColumn() {
+    return lexer.getColumn();
+  }
+:};
+
+terminal String ID;
+terminal KW_CLASS,
+  KW_ELSE,
+  KW_EXTENDS,
+  KW_IF,
+  KW_MAIN,
+  KW_NEW,
+  KW_PUBLIC,
+  KW_RETURN,
+  KW_STATIC,
+  KW_THIS,
+  KW_VOID,
+  KW_WHILE;
+terminal T_INT, T_BOOLEAN, T_STRING;
+terminal SP_SYSTEM, SP_OUT, SP_PRINTLN, SP_LENGTH;
+terminal Integer LIT_INT;
+terminal LIT_TRUE, LIT_FALSE;
+terminal LSBR, RSBR, LCBR, RCBR, LPAREN, RPAREN, DOT, SEMI, COMMA, EQUAL, NOT;
+terminal OP_AND, OP_LT, OP_PLUS, OP_MINUS, OP_TIMES;
+
+non terminal Program Program;
+non terminal MainClass MainClass;
+non terminal ClassDeclList ClassDeclList;
+non terminal ClassDecl ClassDecl;
+non terminal VarDeclList VarDeclList;
+non terminal VarDecl VarDecl;
+non terminal MethodDeclList MethodDeclList;
+non terminal MethodDecl MethodDecl;
+non terminal FormalList FormalList, FormalRestList;
+non terminal Formal Formal, FormalRest;
+non terminal Type Type;
+non terminal StatementList StatementList;
+non terminal Statement Statement;
+non terminal ExpList ActualList, ExpList, ExpRestList;
+non terminal Exp ExpRest, Exp;
+non terminal Identifier Identifier;
+
+precedence left DOT;
+precedence left OP_AND;
+precedence left OP_LT;
+precedence left OP_PLUS, OP_MINUS;
+precedence left OP_TIMES;
+precedence left COMMA;
+precedence left LSBR;
+
+start with Program;
+Program ::= MainClass:am ClassDeclList:acl {: RESULT = new Program(am, acl); :};
+
+MainClass ::= KW_CLASS Identifier:ai1 LCBR KW_PUBLIC KW_STATIC KW_VOID KW_MAIN LPAREN T_STRING LSBR RSBR Identifier:ai2 RPAREN LCBR Statement:as RCBR RCBR
+    {: RESULT = new MainClass(ai1, ai2, as, parser.getLine(), parser.getColumn()); :}
+  | KW_CLASS Identifier:ai1 LCBR error RCBR {: parser.report_error(); RESULT = null; :};
+
+ClassDeclList ::= ClassDeclList:l ClassDecl:n {: l.addElement(n); RESULT = l; :}
+  | {: RESULT = new ClassDeclList(); :};
+ClassDecl ::= KW_CLASS Identifier:ai LCBR VarDeclList:avl MethodDeclList:aml RCBR {: RESULT = new ClassDeclSimple(ai, avl, aml, parser.getLine(), parser.getColumn()); :}
+  | KW_CLASS Identifier LCBR VarDeclList error RCBR {: parser.report_error(); RESULT = null; :}
+  | KW_CLASS Identifier:ai KW_EXTENDS Identifier:aj LCBR VarDeclList:avl MethodDeclList:aml RCBR
+    {: RESULT = new ClassDeclExtends(ai, aj, avl, aml, parser.getLine(), parser.getColumn()); :}
+  | KW_CLASS Identifier KW_EXTENDS Identifier LCBR VarDeclList error RCBR
+    {: parser.report_error(); RESULT = null; :};
+
+VarDeclList ::= VarDeclList:l VarDecl:n {: l.addElement(n); RESULT = l; :}
+  | {: RESULT = new VarDeclList(); :};
+VarDecl ::= Type:at Identifier:ai SEMI {: RESULT = new VarDecl(at, ai, parser.getLine(), parser.getColumn()); :}
+  | error SEMI {: parser.report_error(); RESULT = null; :};
+
+MethodDeclList ::= MethodDeclList:l MethodDecl:n {: l.addElement(n); RESULT = l; :}
+  | {: RESULT = new MethodDeclList(); :};
+MethodDecl ::= KW_PUBLIC Type:at Identifier:ai FormalList:afl LCBR VarDeclList:avl StatementList:asl KW_RETURN Exp:ae SEMI RCBR
+    {: RESULT = new MethodDecl(at, ai, afl, avl, asl, ae, parser.getLine(), parser.getColumn()); :}
+  | KW_PUBLIC Type:at Identifier:ai FormalList:afl LCBR VarDeclList error RCBR
+    {: parser.report_error(); RESULT = null; :};
+
+FormalList ::= LPAREN Formal:n FormalRestList:l RPAREN
+    {:
+      FormalList nl = new FormalList();
+      nl.addElement(n);
+
+      for (int i = 0; i < l.size(); i++) {
+        nl.addElement(l.elementAt(i));
+      }
+
+      RESULT = nl;
+    :}
+  | LPAREN error RPAREN {: parser.report_error(); RESULT = new FormalList(); :}
+  | LPAREN RPAREN {: RESULT = new FormalList(); :};
+FormalRestList ::= FormalRestList:l FormalRest:n {: l.addElement(n); RESULT = l; :}
+  | {: RESULT = new FormalList(); :};
+FormalRest ::= COMMA Formal:f {: RESULT = f; :};
+Formal ::= Type:at Identifier:ai {: RESULT = new Formal(at, ai, parser.getLine(), parser.getColumn()); :};
+
+Type ::= T_INT LSBR RSBR {: RESULT = new IntArrayType(); :}
+  | T_BOOLEAN {: RESULT = new BooleanType(); :}
+  | T_INT {: RESULT = new IntegerType(); :}
+  | ID:i {: RESULT = new IdentifierType(i); :};
+
+StatementList ::= Statement:n StatementList:l
+    {:
+      StatementList nl = new StatementList();
+      nl.addElement(n);
+
+      for (int i = 0; i < l.size(); i++) {
+        nl.addElement(l.elementAt(i));
+      }
+
+      RESULT = nl;
+    :}
+  | {: RESULT = new StatementList(); :};
+Statement ::= LCBR StatementList:asl RCBR {: RESULT = new Block(asl); :}
+  | KW_IF LPAREN Exp:ae RPAREN Statement:as1 KW_ELSE Statement:as2 {: RESULT = new If(ae, as1, as2); :}
+  | KW_WHILE LPAREN Exp:ae RPAREN Statement:as {: RESULT = new While(ae, as); :}
+  | SP_SYSTEM DOT SP_OUT DOT SP_PRINTLN LPAREN Exp:ae RPAREN SEMI {: RESULT = new Print(ae); :}
+  | Identifier:ai EQUAL Exp:ae SEMI {: RESULT = new Assign(ai, ae, parser.getLine(), parser.getColumn()); :}
+  | Identifier:ai LSBR Exp:ae1 RSBR EQUAL Exp:ae2 SEMI {: RESULT = new ArrayAssign(ai, ae1, ae2); :};
+
+Exp ::= Exp:ae1 OP_AND Exp:ae2 {: RESULT = new And(ae1, ae2); :}
+  | Exp:ae1 OP_LT Exp:ae2 {: RESULT = new LessThan(ae1, ae2); :}
+  | Exp:ae1 OP_PLUS Exp:ae2 {: RESULT = new Plus(ae1, ae2); :}
+  | Exp:ae1 OP_MINUS Exp:ae2 {: RESULT = new Minus(ae1, ae2); :}
+  | Exp:ae1 OP_TIMES Exp:ae2 {: RESULT = new Times(ae1, ae2); :}
+  | Exp:ae1 LSBR Exp:ae2 RSBR {: RESULT = new ArrayLookup(ae1, ae2); :}
+  | Exp:ae DOT SP_LENGTH {: RESULT = new ArrayLength(ae); :}
+  | Exp:ae DOT Identifier:id LPAREN ActualList:ael RPAREN {: RESULT = new Call(ae, id, ael); :}
+  | LIT_INT:i {: RESULT = new IntegerLiteral(i.intValue()); :}
+  | LIT_TRUE {: RESULT = new True(); :}
+  | LIT_FALSE {: RESULT = new False(); :}
+  | ID:i {: RESULT = new IdentifierExp(i, parser.getLine(), parser.getColumn()); :}
+  | KW_THIS {: RESULT = new This(); :}
+  | KW_NEW T_INT LSBR Exp:ae RSBR {: RESULT = new NewArray(ae); :}
+  | KW_NEW Identifier:ai LPAREN RPAREN {: RESULT = new NewObject(ai); :}
+  | NOT Exp:ae {: RESULT = new Not(ae); :}
+  | LPAREN Exp:e RPAREN {: RESULT = e; :};
+ActualList ::= ExpList:ael {: RESULT = ael; :}
+  | error {: parser.report_error(); RESULT = new ExpList(); :};
+ExpList ::= Exp:n ExpRestList:l
+    {:
+      ExpList nl = new ExpList();
+      nl.addElement(n);
+
+      for (int i = 0; i < l.size(); i++) {
+        nl.addElement(l.elementAt(i));
+      }
+
+      RESULT = nl;
+    :}
+  | {: RESULT = new ExpList(); :};
+ExpRestList ::= ExpRestList:l ExpRest:n {: l.addElement(n); RESULT = l; :}
+  | ExpRest:n {: ExpList l = new ExpList(); l.addElement(n); RESULT = l; :}
+  | {: RESULT = new ExpList(); :};
+ExpRest ::= COMMA Exp:e {: RESULT = e; :};
+
+Identifier ::= ID:i {: RESULT = new Identifier(i, parser.getLine(), parser.getColumn()); :};
