@@ -24,9 +24,9 @@ public class IRCall extends IRCommand {
     g.addCommand("jal " + label);
 
     if (!label.matches("_.*")) {
-      g.addT(result);
-      int ResultIdx = g.getTIdx(result);
-      g.addCommand("add $t"+ResultIdx+", $zero, $v0");
+          g.addT(result);
+          int ResultIdx = g.getTIdx(result);
+          g.addCommand("add $t"+ResultIdx+", $zero, $v0");
     }
     g.addObject(label,parametersCount);
 

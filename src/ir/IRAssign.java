@@ -47,13 +47,22 @@ public class IRAssign extends IRCommand {
     return string;
   }
 
+  public boolean isLocalVariable(String s) {
+    // if (!s.matches("t[0-9]+") && !arg2.matches("[0-9]+")) {
+    if (s.matches("[a-su-z]+")) {
+        return true;
+    }
+    return false;
+  }
+
   public void encode(MIPSGenerator g) {
     // look for y
     if (arg1.equals("y")) {
-        arg1 = "t0";
+      arg1 = "t0";
     }
+
     if (arg2.equals("y")) {
-        arg2 = "t0";
+      arg2 = "t0";
     }
 
     // look for x
@@ -65,16 +74,27 @@ public class IRAssign extends IRCommand {
       arg2 = g.getLocalValue(arg2);
     }
 
-    if (result.equals("x")) {
+    // if (result.equals("x")) {
+    if (result.matches("[xyz].*")) {
+        if (g.getLocalValue(result) == null) {
+            int next_t = g.getTSize();
+            // g.addT("t"+next_t);
+           // addLocalValue
+           g.addLocalVar(result,"t"+next_t);
+        } 
         result = g.getLocalValue(result);
     }
 
-    g.addT(result);
-    // System.out.println("Result: "+result);
+    // look for z
+    if (arg1.equals("z")) {
+      arg1 = g.getLocalValue(arg1);
+    } 
 
-    // System.out.println("op: "+op);
-    // System.out.println("arg1: "+arg1);
-    // System.out.println("arg2: "+arg2);
+    if (arg2.equals("z")) {
+      arg2 = g.getLocalValue(arg2);
+    } 
+
+    g.addT(result);
     int tvarIdx = g.getTIdx(result);
     int arg1Idx = g.getTIdx(arg1);
     int arg2Idx = g.getTIdx(arg2);

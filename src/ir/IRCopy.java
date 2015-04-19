@@ -23,25 +23,56 @@ public class IRCopy extends IRCommand {
   }
 
   public void encode(MIPSGenerator g) {
-    // int tvarIdx = Integer.parseInt(result.substring(1))-1;
     if (!source.equals("this")) {
-      if (!result.equals("x")) {
+      if (result.matches("t[0-9]+")) {
           g.addT(result);
           int tvarIdx = g.getTIdx(result);
-          g.addCommand("addi $t"+tvarIdx+", $zero, "+source);
+          if (source.matches("[0-9]+")) {
+            g.addCommand("addi $t"+tvarIdx+", $zero, "+source);
+          } else {
+            g.addCommand("add $t"+tvarIdx+", $zero, "+source);
+          }
       } else {
           if (source.matches("t[0-9]+")) {
               g.addLocalVar(result, source);
           } else if (source.matches("y")) {
               source = "t0";
-              g.addLocalVar(result, source);
+              g.addLocalVar(result, "t1");
+              g.addLocalVar("y", "t0");
               result = "t1";
               g.addT(result);
               g.addCommand("add $"+result+", $zero, $"+source);
+          } else if (source.matches("[xz]")) {
+            if (g.getLocalValue(result) == null) {
+              int next_t = g.getTSize();
+              g.addLocalVar(result,"t"+next_t);
+            } 
+            result = g.getLocalValue(result);
+            if (g.getLocalValue(source) == null) {
+              int next_t = g.getTSize();
+              g.addLocalVar(source,"t"+next_t);
+              g.addT("t"+next_t);
+            } 
+            source = g.getLocalValue(source);
+
+            int srcIdx = g.getTIdx(source);
+            if (srcIdx != -1) {
+              g.addCommand("add $"+result+", $zero, $t"+srcIdx);
+            } else {
+            g  .addCommand("add $"+result+", $zero, $"+source);
+            }
           } else {
-              result = g.getLocalValue(result);
-              int resultIdx = g.getTIdx(result);
+            if (g.getLocalValue(result) == null) {
+              int next_t = g.getTSize();
+              g.addLocalVar(result,"t"+next_t);
+            } 
+            result = g.getLocalValue(result);
+            int resultIdx = g.getTIdx(result);
+            if (resultIdx == -1) {
+              g.addCommand("addi $"+result+", $zero, "+source);
+            } else {
               g.addCommand("addi $t"+resultIdx+", $zero, "+source);
+            }
           }
       }
     }

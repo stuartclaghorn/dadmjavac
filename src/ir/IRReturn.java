@@ -37,19 +37,25 @@ public class IRReturn extends IRCommand {
 
   public void encode(MIPSGenerator g) {
     if (!arg.matches("t[0-9]+")) {
-        arg = g.getLocalValue(arg);
-        if (arg == null) {
-            arg = "t0";
-        }
-    }
-    int tIdx = g.getTIdx(arg);
-    g.addCommand("add $v0, $zero, $t"+tIdx);
-    if (g.getMIPSFilename().matches(".*Milestone4.*")) {
-        addEpilogue(g);
+      arg = g.getLocalValue(arg);
+      if (arg == null) {
+        arg = "t0";
+      } else {
+          int resultIdx = g.getTIdx(arg);
+          if (resultIdx != -1) {
+              arg = "t"+resultIdx;
+          }
+      }
+      g.addCommand("add $v0, $zero, $"+arg);
     } else {
-        g.addCommand(";epilogue");
+      int tIdx = g.getTIdx(arg);
+      g.addCommand("add $v0, $zero, $t"+tIdx);
+    }
+    if (g.getMIPSFilename().matches(".*Milestone4.*")) {
+      addEpilogue(g);
+    } else {
+      g.addCommand(";epilogue");
     }
     g.addCommand("jr $ra");
-
   }
 }

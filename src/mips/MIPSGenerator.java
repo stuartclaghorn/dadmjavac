@@ -35,6 +35,14 @@ public class MIPSGenerator {
     return local_vars.get(var);
   }
 
+  public int getLocalVarSize(String var) {
+    return local_vars.size();
+  }
+
+  public String getLocalVars() {
+      return local_vars.toString();
+  }
+
   public void addCommand(String s) {
       instructions.add(s);
   }
@@ -42,7 +50,6 @@ public class MIPSGenerator {
   public void incrementAIdx() {
 	a_idx = a_idx + 1;
   }
-
   public void resetAIdx() {
 	a_idx = 0;
   }
@@ -65,6 +72,14 @@ public class MIPSGenerator {
 
   public void addT(String t) {
     t_s.add(t);
+  }
+
+  public int getTSize() {
+    return t_s.size();
+  }
+
+  public String getT() {
+    return t_s.toString();
   }
 
   public void resetT() {

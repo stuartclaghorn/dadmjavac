@@ -34,7 +34,7 @@ sw $t9, 76($sp)
 ; FUNCTION BODY:
 add $t0, $zero, $a0
 addi $t1, $zero, 2
-addi $t2, $t0, $t1
+add $t2, $t0, $t1
 addi $t3, $zero, 7
 mult $t4, $t2, $t3
 add $t5, $zero, $t4

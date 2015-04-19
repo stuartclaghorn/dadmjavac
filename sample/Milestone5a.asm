@@ -8,7 +8,7 @@ jal _system_out_println
 jal _system_exit
 
 Test2_Start:
-; prologue here -- skipping for brevity
+;prologue
 add $t0, $zero, $a0
 addi $t1, $zero, 10
 slt $t2, $t0, $t1
@@ -25,5 +25,5 @@ L1:
 addi $t5, $zero, 0
 L2:
 add $v0, $zero, $t5
-; epilogue here
+;epilogue
 jr $ra

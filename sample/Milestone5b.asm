@@ -6,7 +6,7 @@ add $t1, $zero, $v0
 add $a0, $zero, $t1
 jal _system_out_println
 jal _system_exit
- 
+
 Test2_Start:
 ;prologue
 add $t0, $zero, $a0
