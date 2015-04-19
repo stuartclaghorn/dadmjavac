@@ -37,7 +37,7 @@ public class IRCopy extends IRCommand {
               g.addLocalVar(result, source);
               result = "t1";
               g.addT(result);
-              g.addCommand("addi $"+result+", $zero, $"+source);
+              g.addCommand("add $"+result+", $zero, $"+source);
           } else {
               result = g.getLocalValue(result);
               int resultIdx = g.getTIdx(result);
