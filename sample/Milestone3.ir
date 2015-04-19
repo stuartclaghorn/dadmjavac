@@ -1,0 +1,11 @@
+Test_main:
+t1 := new Test2
+t2 := 9
+param t1
+param t2
+t3 := call Test2_Start, 2
+param t3
+t4 := call _system_out_println, 1
+t5 := call _system_exit, 0
+Test2_Start:
+return y

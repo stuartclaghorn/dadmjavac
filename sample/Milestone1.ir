@@ -1,0 +1,5 @@
+Test_main:
+t1 := 9
+param t1
+t2 := call _system_out_println, 1
+t3 := call _system_exit, 0

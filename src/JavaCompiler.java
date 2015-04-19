@@ -79,15 +79,11 @@ public class JavaCompiler {
           System.out.println();
 
           System.out.println("MIPS:");
+          mipsGenerator.setMIPSFile(filepath);
           mipsGenerator.generate(intermediateRepresentation);
           System.out.print(mipsGenerator.toString());
-          String outfile = filepath.substring(filepath.lastIndexOf("/")+1);
-          outfile=outfile.substring(0,outfile.lastIndexOf("."))+".asm";
-          System.out.println("Writing "+outfile);
-          if (mipsGenerator.toMipsFile(outfile)) {
-            System.out.println("Wrote "+outfile);
-          } else {
-                System.err.println("ERROR: writing "+outfile);
+          if (!mipsGenerator.toMIPSFile(filepath)) {
+            System.err.println("ERROR: writing MIPS file");
           }
 
         }

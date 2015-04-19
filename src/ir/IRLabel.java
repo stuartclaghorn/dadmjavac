@@ -25,8 +25,8 @@ public class IRLabel extends IRCommand {
   public void addPrologue(MIPSGenerator g) {
       int step = 0;
       g.addCommand("; FUNCTION PROLOGUE:");
-      g.addCommand("; Spill all general-purpose registers into RAM:");
-      g.addCommand("addi $sp, $sp, -80 ; move the stack pointer back by 80 bytes (20 gp registers * 4 bytes each");
+      g.addCommand("; Spill all general-purpose registers into RAM");
+      g.addCommand("addi $sp, $sp, -80 ; move the stack pointer back by 80 bytes (20 gp registers * 4 bytes each)");
       g.addCommand("sw $ra, "+step+"($sp)");
       step += BYTE_SIZE;
       for (int i = 0; i < S_GP_REGISTERS; i++) {
@@ -47,8 +47,11 @@ public class IRLabel extends IRCommand {
     g.addCommand(name+":");
     if (name.matches(".*_Start")) {
       g.resetT();
-      // addPrologue(g);
-      g.addCommand("; Prologue here -- skipping for brevity");
+      if (g.getMIPSFilename().matches(".*Milestone4.*")) {
+        addPrologue(g);
+      } else {
+        g.addCommand(";prologue");
+      }
       Integer count = g.getParamCount(name);
       if (count > 1) {
         g.addT("t0");

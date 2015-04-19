@@ -15,6 +15,7 @@ public class MIPSGenerator {
   private Vector<String> v_s = new Vector<String>();
   private Map<String,Integer> objects = new HashMap<String,Integer>();
   private Map<String,String> local_vars = new HashMap<String,String>();
+  private String mipsFile;
         
   public List<String> generate(List<IRCommand> irCommands) {
       instructions = new ArrayList<String>();
@@ -86,6 +87,14 @@ public class MIPSGenerator {
       return count;
   }
 
+  public void setMIPSFile(String file) {
+    mipsFile = file;
+  }
+
+  public String getMIPSFilename() {
+      return mipsFile;
+  }
+
   public String toString() {
       String mips_out = new String("");
       for (String mips : instructions) {
@@ -94,9 +103,16 @@ public class MIPSGenerator {
       return mips_out;
   }
 
-  public boolean toMipsFile(String filename) {
+  public boolean toMIPSFile(String filename) {
     FileOutputStream fouts = null;
     OutputStreamWriter out = null;
+    
+    if (!mipsFile.equals(filename)) {
+      mipsFile=filename;
+    }
+    filename = filename.substring(filename.lastIndexOf("/")+1);
+    filename=filename.substring(0,filename.lastIndexOf("."))+".asm";
+    System.out.println("Writing "+filename);
     try {
         fouts = new FileOutputStream(filename);
         out = new OutputStreamWriter(fouts,"UTF-8");
@@ -113,6 +129,7 @@ public class MIPSGenerator {
         return false;
     } finally {
         try {
+            System.out.println("Wrote "+filename);
             out.close();
         } catch (Exception ex) {
             System.out.println("Error: Writing Mips file");

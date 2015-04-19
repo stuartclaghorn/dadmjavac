@@ -1,0 +1,27 @@
+Test_main:
+t1 := new Test2
+t2 := 0
+param t1
+param t2
+t3 := call Test2_Start, 2
+param t3
+t4 := call _system_out_println, 1
+t5 := call _system_exit, 0
+Test2_Start:
+t6 := 10
+t7 := y < t6
+iffalse t7 goto L1
+t8 := this
+t9 := 1
+t10 := y + t9
+param t8
+param t10
+t11 := call Test2_Start, 2
+x := t11
+t12 := 1
+x := x + t12
+goto L2
+L1:
+x := 0
+L2:
+return x
