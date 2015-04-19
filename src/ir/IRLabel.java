@@ -41,10 +41,20 @@ public class IRLabel extends IRCommand {
   }
 
   public void encode(MIPSGenerator g) {
+    if (name.matches(".*_Start")) {
+      g.addCommand("");
+    }
     g.addCommand(name+":");
     if (name.matches(".*_Start")) {
-        // addPrologue(g);
-        g.addCommand("; Prologue here -- skipping for brevity");
+      g.resetT();
+      // addPrologue(g);
+      g.addCommand("; Prologue here -- skipping for brevity");
+      Integer count = g.getParamCount(name);
+      if (count > 1) {
+        g.addT("t0");
+        // add logic for a#s
+        g.addCommand("add $t"+g.getTIdx("t0")+", $zero, $a0");
+      }
     }
   }
 }

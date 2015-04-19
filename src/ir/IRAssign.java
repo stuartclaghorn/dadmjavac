@@ -48,16 +48,53 @@ public class IRAssign extends IRCommand {
   }
 
   public void encode(MIPSGenerator g) {
+    // look for y
+    if (arg1.equals("y")) {
+        arg1 = "t0";
+    }
+    if (arg2.equals("y")) {
+        arg2 = "t0";
+    }
+
+    // look for x
+    if (arg1.equals("x")) {
+      arg1 = g.getLocalValue(arg1);
+    }
+
+    if (arg2.equals("x")) {
+      arg2 = g.getLocalValue(arg2);
+    }
+
+    if (result.equals("x")) {
+        result = g.getLocalValue(result);
+    }
+
     g.addT(result);
+    // System.out.println("Result: "+result);
+
+    // System.out.println("op: "+op);
+    // System.out.println("arg1: "+arg1);
+    // System.out.println("arg2: "+arg2);
     int tvarIdx = g.getTIdx(result);
     int arg1Idx = g.getTIdx(arg1);
     int arg2Idx = g.getTIdx(arg2);
+    // Check for tvarIdx arg1Idx arg2Idx != -1
     switch (op) {
         case "+":
             g.addCommand("add $t"+tvarIdx+", $t"+arg1Idx+", $t"+arg2Idx);
             break;
         case "*":
             g.addCommand("mult $t"+tvarIdx+", $t"+arg1Idx+", $t"+arg2Idx);
+            break;
+        case "<":
+            if (arg1Idx != -1)  {
+              g.addCommand("slt $t"+tvarIdx+", $t"+arg1Idx+", $t"+arg2Idx);
+            } else {
+              g.addCommand("slt $t"+tvarIdx+", $a0, $t"+arg2Idx);
+            }
+            break;
+        default:
+            g.addCommand("Unknown IRAssign op - "+op);
             break;
     }
   }

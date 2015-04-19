@@ -14,6 +14,7 @@ public class IRNewObject extends IRCommand {
   }
 
   public void encode(MIPSGenerator g) {
-    // g.addCommand(this.getClass().getSimpleName()+" Mips");
+    // g.addCommand(this.getClass().getSimpleName()+" Mips - result:"+result+" type: "+type);
+    g.addObject(type,0);
   }
 }

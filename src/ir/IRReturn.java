@@ -37,7 +37,11 @@ public class IRReturn extends IRCommand {
 
   public void encode(MIPSGenerator g) {
     // int argIdx = getTIdx();
-    g.addCommand("add $v0, $zero, $a0");
+    if (!arg.matches("t[0-9]+")) {
+        arg = g.getLocalValue(arg);
+    }
+    int tIdx = g.getTIdx(arg);
+    g.addCommand("add $v0, $zero, $t"+tIdx);
     // addEpilogue(g);
     g.addCommand("; epilogue here -- skipping for brevity");
     g.addCommand("jr $ra");

@@ -13,6 +13,8 @@ public class MIPSGenerator {
   private Vector<String> a_s = new Vector<String>();
   private Vector<String> t_s = new Vector<String>();
   private Vector<String> v_s = new Vector<String>();
+  private Map<String,Integer> objects = new HashMap<String,Integer>();
+  private Map<String,String> local_vars = new HashMap<String,String>();
         
   public List<String> generate(List<IRCommand> irCommands) {
       instructions = new ArrayList<String>();
@@ -22,6 +24,14 @@ public class MIPSGenerator {
       }
                         
       return instructions;
+  }
+
+  public void addLocalVar(String var, String value) {
+    local_vars.put(var,value);
+  }
+
+  public String getLocalValue(String var) {
+    return local_vars.get(var);
   }
 
   public void addCommand(String s) {
@@ -37,7 +47,7 @@ public class MIPSGenerator {
   }
 
   public void incrementTIdx() {
-	a_idx = a_idx + 1;
+	t_idx = t_idx + 1;
   }
 
   public static int getAIdx() {
@@ -54,6 +64,26 @@ public class MIPSGenerator {
 
   public void addT(String t) {
     t_s.add(t);
+  }
+
+  public void resetT() {
+    t_s = new Vector<String>();
+  }
+
+  public void resetA() {
+    a_s = new Vector<String>();
+  }
+
+  public void addObject(String name,Integer paramCount) {
+      objects.put(name,paramCount);
+  }
+
+  public Integer getParamCount(String name) {
+      Integer count = objects.get(name);
+      if (count == null) {
+        return 0;
+      }
+      return count;
   }
 
   public String toString() {
@@ -90,14 +120,4 @@ public class MIPSGenerator {
     }
     return true;
   }
-          
-   /* public void visit(IRAssign command) {
-      instructions.add(...);
-   }
-            
-      public void visit(IRCall command) {
-        instructions.add(...);
-      } */
-              
-    // ...
 }
