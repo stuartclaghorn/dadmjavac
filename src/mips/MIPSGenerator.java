@@ -74,6 +74,10 @@ public class MIPSGenerator {
     t_s.add(t);
   }
 
+  public String getTAt(int idx) {
+      return t_s.get(idx);
+  }
+
   public int getTSize() {
     return t_s.size();
   }
