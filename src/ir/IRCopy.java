@@ -36,12 +36,15 @@ public class IRCopy extends IRCommand {
           if (source.matches("t[0-9]+")) {
               g.addLocalVar(result, source);
           } else if (source.matches("y")) {
-              source = "t0";
-              g.addLocalVar(result, "t1");
-              g.addLocalVar("y", "t0");
-              result = "t1";
-              g.addT(result);
-              g.addCommand("add $"+result+", $zero, $"+source);
+              if (result.matches("[xyz]")) {
+                  if (g.getLocalValue(result) == null) {
+                      int next_t = g.getTSize();
+                      g.addLocalVar(result,"t"+next_t);
+                      g.addT("t"+next_t);
+                  }
+              }
+              g.addLocalVar(source, g.getTAt(0));
+              g.addCommand("add $"+g.getLocalValue(result)+", $zero, $"+g.getLocalValue(source));
           } else if (source.matches("[xz]")) {
             if (g.getLocalValue(result) == null) {
               int next_t = g.getTSize();
