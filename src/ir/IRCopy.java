@@ -43,6 +43,7 @@ public class IRCopy extends IRCommand {
                       g.addT("t"+next_t);
                   }
               }
+
               g.addLocalVar(source, g.getTAt(0));
               g.addCommand("add $"+g.getLocalValue(result)+", $zero, $"+g.getLocalValue(source));
           } else if (source.matches("[xz]")) {
